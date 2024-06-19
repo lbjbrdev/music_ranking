@@ -1,5 +1,14 @@
+import React from 'react';
+
+import { Home } from './pages/Home';
+
+import { GlobalStyle } from './global/globalStyle';
+
 export function App() {
   return (
-    <h1>Hello World</h1>
+    <React.Fragment>
+      <Home />
+      <GlobalStyle />
+    </React.Fragment>
   )
 }
