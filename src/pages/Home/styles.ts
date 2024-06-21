@@ -19,7 +19,7 @@ export const SearchButton = styled.button`
 
     cursor: pointer;
     
-    background-color: ${colors.blue.primary};
+    background-color: ${props => props?.color || colors.blue.primary};
 
     transition: all .3s;
 
@@ -45,4 +45,17 @@ export const Results = styled.div`
 
         color: ${colors.blue.primary};
     }
+`;
+
+export const NoDataContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+`;
+
+export const NoDataMessage = styled.p`
+    font-size: 30px;
+    font-weight: bold;
+    color: ${colors.blue.primary};
 `;

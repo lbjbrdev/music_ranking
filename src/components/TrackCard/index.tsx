@@ -9,6 +9,8 @@ interface IProps {
     customImageSize?: number;
     trackName: string;
     trackAuthor: string;
+    onSendVote?: () => void;
+    disabled?: boolean;
 }
 
 export function TrackCard(props: IProps) {
@@ -21,7 +23,7 @@ export function TrackCard(props: IProps) {
                     <p className='trackName'>{props.trackName}</p>
                     <p className='trackAuthor'>{props.trackAuthor}</p>
 
-                    <S.Button>
+                    <S.Button onClick={props.onSendVote} disabled={props?.disabled}>
                         Escolher essa Música
                     </S.Button>
                 </S.TrackData>
