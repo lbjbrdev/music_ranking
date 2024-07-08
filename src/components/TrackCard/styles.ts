@@ -35,7 +35,32 @@ export const TrackData = styled.div`
     }
 `;
 
+export const ChoicesContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    margin-top: -20px;
+
+    > img {
+        width: 32px;
+    }
+`;
+
+export const Choices = styled.p`
+    color: ${colors.blue.primary};
+        
+    font-size: 21px;
+    font-weight: bold;    
+`;
+
 export const Button = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 45px;
+
     background-color: ${colors.blue.primary};
 
     border: none;

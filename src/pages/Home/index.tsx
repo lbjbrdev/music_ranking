@@ -14,44 +14,13 @@ import SearchIcon from '../../assets/icons/search.svg';
 import TrashIcon from '../../assets/icons/trash.svg';
 import TrackImage from '../../assets/track.svg';
 import { colors } from '../../theme/colors';
+import { Ranking } from '../../components/Ranking';
 
 export function Home() {
     const [voteControl, setVoteControl] = React.useState<number>(0);
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [startSearch, setStartSearch] = React.useState<boolean | null>(false);
-
-    const renderResultContent = () => {
-        if (startSearch) {
-            return (
-                <S.Results>
-                    <p>Resultados da pesquisa</p>
-
-                    <TrackCard
-                        image={TrackImage}
-                        trackName='Deu moral'
-                        trackAuthor='Zé Neto e Cristiano'
-                        onSendVote={() => handleSendVote()}
-                    />
-
-                    <TrackCard
-                        image={TrackImage}
-                        trackName='Deu moral'
-                        trackAuthor='Zé Neto e Cristiano'
-                        onSendVote={() => handleSendVote()}
-                    />
-
-                    <TrackCard
-                        image={TrackImage}
-                        trackName='Deu moral'
-                        trackAuthor='Zé Neto e Cristiano'
-                        onSendVote={() => handleSendVote()}
-                    />
-                </S.Results>
-            );
-        } else if (startSearch === false) {
-            return <NoData />;
-        }
-    };
+    const [noDataContent, setNoDataContent] = React.useState<boolean>(false);
 
     const handleSendVote = () => {
         if (voteControl >= 3) {
@@ -65,7 +34,7 @@ export function Home() {
 
     const handleSearch = () => {
         if (!searchTerm || searchTerm !== 'Deu moral') {
-            setStartSearch(false);
+            setNoDataContent(true);
             toast({ message: 'Sua pesquisa nao obteve resultados :(', type: 'error' });
             return;
         }
@@ -76,6 +45,42 @@ export function Home() {
     const handleClearSearch = () => {
         setSearchTerm('');
         setStartSearch(null);
+        setNoDataContent(false);
+    };
+
+    const renderResultContent = () => {
+        if (noDataContent) {
+            return <NoData />
+        } else if (startSearch) {
+            return (
+                <React.Fragment>
+                    <S.Results>
+                        <p>Resultados da pesquisa</p>
+
+                        <TrackCard
+                            image={TrackImage}
+                            trackName='Deu moral'
+                            trackAuthor='Zé Neto e Cristiano'
+                            onAction={() => handleSendVote()}
+                        />
+
+                        <TrackCard
+                            image={TrackImage}
+                            trackName='Deu moral'
+                            trackAuthor='Zé Neto e Cristiano'
+                            onAction={() => handleSendVote()}
+                        />
+
+                        <TrackCard
+                            image={TrackImage}
+                            trackName='Deu moral'
+                            trackAuthor='Zé Neto e Cristiano'
+                            onAction={() => handleSendVote()}
+                        />
+                    </S.Results>
+                </React.Fragment>
+            );
+        }
     };
 
     return (
@@ -88,7 +93,7 @@ export function Home() {
                     value={searchTerm}
                     onChange={event => setSearchTerm(event.target.value)}
                 />
-                
+
                 <S.SearchButton onClick={handleSearch}>
                     <Icon src={SearchIcon} width={30} />
                 </S.SearchButton>
@@ -99,6 +104,8 @@ export function Home() {
             </S.Form>
 
             {renderResultContent()}
+
+            <Ranking />
         </React.Fragment >
     );
 }
