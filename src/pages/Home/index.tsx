@@ -15,38 +15,97 @@ import TrashIcon from '../../assets/icons/trash.svg';
 import TrackImage from '../../assets/track.svg';
 import { colors } from '../../theme/colors';
 import { Ranking } from '../../components/Ranking';
+import { TrackOrchestratorService } from '../../services/tracks/orchestrator';
+import { ITrack } from '../../models/interfaces/track';
 
 export function Home() {
     const [voteControl, setVoteControl] = React.useState<number>(0);
-    const [searchTerm, setSearchTerm] = React.useState<string>('');
+    const [trackSearchTerm, setTrackSearchTerm] = React.useState<string>('');
+    const [authorSearchTerm, setAuthorSearchTerm] = React.useState<string>('');
     const [startSearch, setStartSearch] = React.useState<boolean | null>(false);
     const [noDataContent, setNoDataContent] = React.useState<boolean>(false);
+    const [trackResult, setTrackResult] = React.useState<ITrack | undefined>();
+    const [allTracks, setAllTracks] = React.useState<ITrack[]>();
 
-    const handleSendVote = () => {
-        if (voteControl >= 3) {
-            toast({ message: 'Ops seus votos acabaram :(', type: 'error' });
-            return;
+    const trackServices = new TrackOrchestratorService();
+
+    const handleSendVote = async (trackId: string, totalVotes: number) => {
+        try {
+            if (voteControl >= 3) {
+                toast({ message: 'Ops seus votos acabaram :(', type: 'error' });
+                return;
+            }
+
+            setVoteControl(voteControl + 1);
+
+            const updatedTrack = await trackServices.sendVote(trackId, totalVotes + 1);
+
+            setTrackResult(updatedTrack!);
+
+            toast({ message: 'Boa! Seu voto foi computado com sucesso!', type: 'success' });
+        } catch (error) {
+            console.error(error);
         }
-
-        setVoteControl(voteControl + 1);
-        toast({ message: 'Boa! Seu voto foi computado com sucesso!', type: 'success' });
     };
 
-    const handleSearch = () => {
-        if (!searchTerm || searchTerm !== 'Deu moral') {
+    const handleSearch = async () => {
+        if (!trackSearchTerm || trackSearchTerm === '') {
+            toast({ message: 'Informe o nome da música para que a pesquisa possa ser realizada!', type: 'error' });
             setNoDataContent(true);
-            toast({ message: 'Sua pesquisa nao obteve resultados :(', type: 'error' });
             return;
         }
 
-        setStartSearch(true);
+        try {
+            setStartSearch(true);
+
+            const results = await trackServices.getAllTracks();
+
+            const track = results?.find(track => track.musicName?.toUpperCase() === trackSearchTerm.toUpperCase());
+
+            if (!track) {
+                const createdTrack = await trackServices.createTrack({
+                    id: crypto.randomUUID().toString(),
+                    musicName: trackSearchTerm,
+                    author: authorSearchTerm,
+                    totalVotes: 0
+                })
+
+                setTrackResult(createdTrack);
+
+                handleSearch();
+            }
+
+            setTrackResult(track!);
+            setNoDataContent(false);
+
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleClearSearch = () => {
-        setSearchTerm('');
+        setTrackSearchTerm('');
+        setAuthorSearchTerm('');
         setStartSearch(null);
         setNoDataContent(false);
+        setTrackResult(undefined);
     };
+
+    const fetchAllTracksRanking = async () => {
+        try {
+            const response = await trackServices.getAllTracks();
+
+            const orderingVotes = response?.sort((a, b) => b.totalVotes - a.totalVotes);
+
+            setAllTracks(orderingVotes);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchAllTracksRanking();
+    }, [trackResult]);
 
     const renderResultContent = () => {
         if (noDataContent) {
@@ -59,24 +118,11 @@ export function Home() {
 
                         <TrackCard
                             image={TrackImage}
-                            trackName='Deu moral'
-                            trackAuthor='Zé Neto e Cristiano'
-                            onAction={() => handleSendVote()}
+                            trackName={trackResult?.musicName || ''}
+                            author={trackResult?.author}
+                            onAction={() => handleSendVote(trackResult?.id || '', trackResult?.totalVotes || 0)}
                         />
 
-                        <TrackCard
-                            image={TrackImage}
-                            trackName='Deu moral'
-                            trackAuthor='Zé Neto e Cristiano'
-                            onAction={() => handleSendVote()}
-                        />
-
-                        <TrackCard
-                            image={TrackImage}
-                            trackName='Deu moral'
-                            trackAuthor='Zé Neto e Cristiano'
-                            onAction={() => handleSendVote()}
-                        />
                     </S.Results>
                 </React.Fragment>
             );
@@ -86,26 +132,43 @@ export function Home() {
     return (
         <React.Fragment>
             <Header />
-
             <S.Form>
+                <S.Headline>
+                    Aqui os fãs de Hebert Freire
+                    têm o poder de escolher as próximas músicas do canal!
+                </S.Headline>
                 <Input
-                    placeholder='Pesquise aqui sua música (música ou artista)'
-                    value={searchTerm}
-                    onChange={event => setSearchTerm(event.target.value)}
+                    placeholder='Informe o nome da música'
+                    value={trackSearchTerm}
+                    onChange={event => setTrackSearchTerm(event.target.value)}
                 />
 
-                <S.SearchButton onClick={handleSearch}>
-                    <Icon src={SearchIcon} width={30} />
-                </S.SearchButton>
+                <Input
+                    placeholder='Informe o nome do artista'
+                    value={authorSearchTerm}
+                    onChange={event => setAuthorSearchTerm(event.target.value)}
+                />
 
-                <S.SearchButton color={colors.red} onClick={handleClearSearch}>
-                    <Icon src={TrashIcon} width={30} />
-                </S.SearchButton>
+                <S.Row>
+                    <S.SearchButton onClick={handleSearch}>
+                        <Icon src={SearchIcon} width={30} />
+                        <S.SearchButtonLabel>Pesquisar</S.SearchButtonLabel>
+                    </S.SearchButton>
+
+                    <S.SearchButton 
+                        color={colors.red} 
+                        onClick={handleClearSearch}
+                        disabled={!trackSearchTerm || trackSearchTerm === ''}
+                    >
+                        <Icon src={TrashIcon} width={30} />
+                        <S.SearchButtonLabel>Limpar pesquisa</S.SearchButtonLabel>
+                    </S.SearchButton>
+                </S.Row>
             </S.Form>
 
             {renderResultContent()}
 
-            <Ranking />
+            {!noDataContent && <Ranking rankingList={allTracks} />}
         </React.Fragment >
     );
 }

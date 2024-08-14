@@ -10,33 +10,33 @@ interface IProps {
     image: string;
     customImageSize?: number;
     trackName: string;
-    trackAuthor: string;
+    author?: string;
     onAction?: () => void;
     disabled?: boolean;
     actionLabel?: string;
     rightIcon?: string;
     hasRanking?: boolean;
+    rankPosition?: number;
+    quantityVotes?: number;
 }
 
 export function TrackCard(props: IProps) {
     return (
         <React.Fragment>
             <S.Container>
-                <Icon src={props.image} width={props?.customImageSize || 130} />
-
                 <S.TrackData>
-                    <p className='trackName'>{props.hasRanking && '1 -'} {props.trackName}</p>
-                    <p className='trackAuthor'>{props.trackAuthor}</p>
+                    <p className='trackName'>{props.hasRanking && `${props?.rankPosition} -`} {props.trackName} {props?.author && ` ( ${props?.author} )`}</p>
 
                     {props?.hasRanking && (
                         <S.ChoicesContainer>
-                            <Icon src={TrophyIcon} />
-                            <S.Choices>350 escolhas</S.Choices>
+                            {props?.rankPosition === 1 && <Icon src={TrophyIcon} />}
+                            <S.Choices>{props?.quantityVotes} {props?.quantityVotes && props?.quantityVotes > 1 ? 'escolhas' : 'escolha'}</S.Choices>
                         </S.ChoicesContainer>
                     )}
 
+
                     <S.Button onClick={props.onAction} disabled={props?.disabled}>
-                        {props.actionLabel || 'Escolher essa Música'}
+                        {props.actionLabel || 'Votar nessa música'}
                         <Icon src={props.rightIcon} />
                     </S.Button>
                 </S.TrackData>

@@ -1,6 +1,6 @@
 import * as S from './styles';
 
-import Logo from '../../assets/icons/logo.svg';
+import Logo from '../../assets/images/logo.png';
 
 export function Header() {
     return (

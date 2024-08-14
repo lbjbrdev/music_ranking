@@ -5,11 +5,14 @@ import { colors } from '../../theme/colors';
 export const Container = styled.div`
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 30px;
+
+    margin-bottom: 10px;
 
     background-color: ${colors.white};
 
-    width: 480px;
+    width: 380px;
 
     padding: 25px;
 
@@ -19,7 +22,7 @@ export const Container = styled.div`
 export const TrackData = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 
     margin-top: -20px;
 

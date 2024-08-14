@@ -12,4 +12,6 @@ export const Container = styled.header`
     height: 10rem;
 `;
 
-export const Image = styled.img``;
+export const Image = styled.img`
+    max-width: 400px;
+`;
