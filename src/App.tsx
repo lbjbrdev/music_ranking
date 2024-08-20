@@ -1,16 +1,16 @@
 import React from 'react';
-
-import { Home } from './pages/Home';
+import { ToastContainer as ToastProvider } from 'react-toastify';
 
 import { GlobalStyle } from './global/globalStyle';
-import { ToastContainer as ToastProvider } from 'react-toastify';
+
+import AppRouter from './router';
 
 export function App() {
   return (
     <React.Fragment>
       <ToastProvider />
 
-      <Home />
+      <AppRouter />
       <GlobalStyle />
     </React.Fragment>
   )

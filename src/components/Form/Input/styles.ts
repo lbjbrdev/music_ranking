@@ -8,7 +8,7 @@ export const Field = styled.input`
     outline: none;
     
     height: 30px;
-    width: 450px;
+    width: 350px;
 
     font-size: 20px;
 

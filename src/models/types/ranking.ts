@@ -1,0 +1,1 @@
+export type TRanking = 'Praises' | 'musics';

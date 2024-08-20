@@ -5,20 +5,22 @@ import { Input } from '../../components/Form/Input';
 import { Icon } from '../../components/Icon';
 import { TrackCard } from '../../components/TrackCard';
 import { NoData } from '../../components/NoData';
-
 import { toast } from '../../components/Toast';
+import { Ranking } from '../../components/Ranking';
 
-import * as S from './styles';
+import { ITrack } from '../../models/interfaces/track';
+
+import { PraiseTrackOrchestratorService } from '../../services/praiseTracks/orchestrator';
+
+import { colors } from '../../theme/colors';
 
 import SearchIcon from '../../assets/icons/search.svg';
 import TrashIcon from '../../assets/icons/trash.svg';
 import TrackImage from '../../assets/track.svg';
-import { colors } from '../../theme/colors';
-import { Ranking } from '../../components/Ranking';
-import { TrackOrchestratorService } from '../../services/tracks/orchestrator';
-import { ITrack } from '../../models/interfaces/track';
 
-export function Home() {
+import * as S from './styles';
+
+export function PraisesVotes() {
     const [voteControl, setVoteControl] = React.useState<number>(0);
     const [trackSearchTerm, setTrackSearchTerm] = React.useState<string>('');
     const [authorSearchTerm, setAuthorSearchTerm] = React.useState<string>('');
@@ -27,7 +29,7 @@ export function Home() {
     const [trackResult, setTrackResult] = React.useState<ITrack | undefined>();
     const [allTracks, setAllTracks] = React.useState<ITrack[]>();
 
-    const trackServices = new TrackOrchestratorService();
+    const services = new PraiseTrackOrchestratorService();
 
     const handleSendVote = async (trackId: string, totalVotes: number) => {
         try {
@@ -38,7 +40,7 @@ export function Home() {
 
             setVoteControl(voteControl + 1);
 
-            const updatedTrack = await trackServices.sendVote(trackId, totalVotes + 1);
+            const updatedTrack = await services.sendPraiseVote(trackId, totalVotes + 1);
 
             setTrackResult(updatedTrack!);
 
@@ -58,12 +60,12 @@ export function Home() {
         try {
             setStartSearch(true);
 
-            const results = await trackServices.getAllTracks();
+            const results = await services.getAllPraiseTracks();
 
             const track = results?.find(track => track.musicName?.toUpperCase() === trackSearchTerm.toUpperCase());
 
             if (!track) {
-                const createdTrack = await trackServices.createTrack({
+                const createdTrack = await services.createPraiseTrack({
                     id: crypto.randomUUID().toString(),
                     musicName: trackSearchTerm,
                     author: authorSearchTerm,
@@ -75,7 +77,7 @@ export function Home() {
                 handleSearch();
             }
 
-            setTrackResult(track!);
+            setTrackResult(track);
             setNoDataContent(false);
 
         } catch (error) {
@@ -93,11 +95,14 @@ export function Home() {
 
     const fetchAllTracksRanking = async () => {
         try {
-            const response = await trackServices.getAllTracks();
+            const response = await services.getAllPraiseTracks();
 
             const orderingVotes = response?.sort((a, b) => b.totalVotes - a.totalVotes);
 
-            setAllTracks(orderingVotes);
+            const hasVotes = orderingVotes?.find(item => item.totalVotes && item.totalVotes > 0);
+
+            if (hasVotes) setAllTracks(orderingVotes);
+
         } catch (error) {
             console.error(error);
         }
@@ -135,7 +140,7 @@ export function Home() {
             <S.Form>
                 <S.Headline>
                     Aqui os fãs de Hebert Freire
-                    têm o poder de escolher as próximas músicas do canal!
+                    têm o poder de escolher os próximos louvores do curso!
                 </S.Headline>
                 <Input
                     placeholder='Informe o nome da música'
@@ -155,8 +160,8 @@ export function Home() {
                         <S.SearchButtonLabel>Pesquisar</S.SearchButtonLabel>
                     </S.SearchButton>
 
-                    <S.SearchButton 
-                        color={colors.red} 
+                    <S.SearchButton
+                        color={colors.red}
                         onClick={handleClearSearch}
                         disabled={!trackSearchTerm || trackSearchTerm === ''}
                     >
@@ -168,7 +173,12 @@ export function Home() {
 
             {renderResultContent()}
 
-            {!noDataContent && <Ranking rankingList={allTracks} />}
+            {!noDataContent && allTracks?.length && 
+                <Ranking 
+                    rankingList={allTracks} 
+                    rankingType='Praises'
+                />
+            }
         </React.Fragment >
     );
 }

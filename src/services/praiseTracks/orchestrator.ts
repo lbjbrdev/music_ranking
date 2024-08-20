@@ -1,12 +1,13 @@
 import { ITrack } from "../../models/interfaces/track";
-import { TrackApiService } from "./apiService";
 
-export class TrackOrchestratorService {
-    apiService = new TrackApiService();
+import { PraiseTrackApiService } from "./apiService";
 
-    createTrack = async (data: ITrack) => {
+export class PraiseTrackOrchestratorService {
+    apiService = new PraiseTrackApiService();
+
+    createPraiseTrack = async (data: ITrack) => {
         try {
-            const response = await this.apiService.createTrack(data);
+            const response = await this.apiService.createPraiseTrack(data);
 
             if (response.status !== 200) throw response;
 
@@ -16,9 +17,9 @@ export class TrackOrchestratorService {
         }
     };
 
-    getAllTracks = async () => {
+    getAllPraiseTracks = async () => {
         try {
-            const response = await this.apiService.getAllTracks();
+            const response = await this.apiService.getAllPraiseTracks();
 
             if (response.status !== 200) throw response;
 
@@ -28,9 +29,9 @@ export class TrackOrchestratorService {
         }
     };
 
-    sendVote = async (trackId: string, totalVotes: number) => {
+    sendPraiseVote = async (trackId: string, totalVotes: number) => {
         try {
-            const response = await this.apiService.sendVote(trackId, totalVotes);
+            const response = await this.apiService.sendPraiseVote(trackId, totalVotes);
 
             if (response.status !== 200) throw response;
 

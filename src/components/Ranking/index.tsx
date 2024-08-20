@@ -1,23 +1,27 @@
-import { TrackCard } from '../TrackCard';
+import React from 'react';
+
+import { TrackCard } from '../../components/TrackCard';
+import { toast } from '../../components/Toast';
 
 import { ITrack } from '../../models/interfaces/track';
 
+import { ChanelTrackOrchestratorService } from '../../services/chanelTracks/orchestrator';
+
 import TrackImage from '../../assets/track.svg';
 
-import * as S from './styles';
-import { TrackOrchestratorService } from '../../services/tracks/orchestrator';
+import { TRanking } from '../../models/types/ranking';
 
-import { toast } from '../../components/Toast';
-import React from 'react';
+import * as S from './styles';
 
 interface IRankingProps {
+    rankingType: TRanking;
     rankingList?: ITrack[];
 }
 
-export function Ranking({ rankingList }: IRankingProps) {
+export function Ranking({ rankingList, rankingType }: IRankingProps) {
     const [voteControl, setVoteControl] = React.useState<number>(0);
 
-    const trackServices = new TrackOrchestratorService();
+    const services = new ChanelTrackOrchestratorService();
 
     const onSendVote = async (trackId: string, totalVotes: number) => {
         try {
@@ -28,7 +32,7 @@ export function Ranking({ rankingList }: IRankingProps) {
 
             setVoteControl(voteControl + 1);
 
-            await trackServices.sendVote(trackId, totalVotes + 1);
+            await services.sendChanelVote(trackId, totalVotes + 1, rankingType);
 
             toast({ message: 'Boa! Seu voto foi computado com sucesso!', type: 'success' });
 

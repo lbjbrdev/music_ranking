@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import { colors } from '../../theme/colors';
 
 export const Row = styled.div`
@@ -24,7 +25,7 @@ export const SearchButton = styled.button`
     justify-content: center;
     gap: 10px;
 
-    width: 230px;
+    width: 180px;
     height: 55px;
 
     border-radius: 10px;
@@ -83,4 +84,6 @@ export const Headline = styled.p`
     font-size: 23px;
     font-weight: bold;
     color: ${colors.blue.primary};
+    
+    margin: 10px;
 `;
