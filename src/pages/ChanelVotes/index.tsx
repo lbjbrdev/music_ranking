@@ -19,7 +19,6 @@ import TrashIcon from '../../assets/icons/trash.svg';
 import TrackImage from '../../assets/track.svg';
 
 import * as S from './styles';
-import { Link } from 'react-router-dom';
 
 export function ChanelVotes() {
     const [voteControl, setVoteControl] = React.useState<number>(0);
@@ -140,8 +139,6 @@ export function ChanelVotes() {
                     Aqui os fãs de Hebert Freire
                     têm o poder de escolher as próximas músicas do canal!
                 </S.Headline>
-
-                <Link to='/louvores'>Teste rotas</Link>
 
                 <Input
                     placeholder='Informe o nome da música'
